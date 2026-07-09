@@ -60,10 +60,10 @@
     <script>
         (async function() {
             const CONFIG = {
-                                PRESSEL_ID: 180,
-                WHITE_PAGE_URL: "https://shopee.com.br/i39ujg82gw?categoryId=100001&entryPoint=ShopByPDP&itemId=99281319700",
-                OFFER_PAGE_URL: "https://zapappp.netlify.app/",
-                BOT_USERNAME: "vitoriamorenabot",
+                                PRESSEL_ID: 124,
+                WHITE_PAGE_URL: "https://fernandatamires.netlify.app/",
+                OFFER_PAGE_URL: "",
+                BOT_USERNAME: "vitoriattkbot",
                 API_BASE_URL: "https://hot-track.com"
             };
             function getQueryParam(param) {
@@ -100,11 +100,6 @@
             async function registerAndRedirect() {
                 try {
                     
-            const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent);
-            if (!isMobile) {
-                window.location.href = CONFIG.WHITE_PAGE_URL;
-                return;
-            }
                     
                     const { fbp, fbc } = getFacebookCookies();
                     const kwaiClickId = getKwaiClickId() || getQueryParam('click_id') || getQueryParam('k_click_id');
