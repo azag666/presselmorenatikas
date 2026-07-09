@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando...</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a1a1a; 
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .loader-container {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #ffffff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        p {
+            font-size: 1.2em;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 0.5s;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '11111');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=11111&ev=PageView&noscript=1"
+    /></noscript>
+    <script>
+        (async function() {
+            const CONFIG = {
+                                PRESSEL_ID: 180,
+                WHITE_PAGE_URL: "https://shopee.com.br/i39ujg82gw?categoryId=100001&entryPoint=ShopByPDP&itemId=99281319700",
+                OFFER_PAGE_URL: "https://zapappp.netlify.app/",
+                BOT_USERNAME: "vitoriamorenabot",
+                API_BASE_URL: "https://hot-track.com"
+            };
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+            function getKwaiClickId() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('clickid') || urlParams.get('callback');
+            }
+            function getCookie(name) {
+                const cookies = document.cookie.split('; ');
+                for (const cookie of cookies) {
+                    const equalIndex = cookie.indexOf('=');
+                    if (equalIndex === -1) continue;
+                    const cookieName = cookie.substring(0, equalIndex).trim();
+                    const cookieValue = cookie.substring(equalIndex + 1);
+                    if (cookieName === name) {
+                        return decodeURIComponent(cookieValue);
+                    }
+                }
+                return null;
+            }
+            function getFacebookCookies() {
+                return {
+                    fbp: getCookie('_fbp'),
+                    fbc: getCookie('_fbc')
+                };
+            }
+            function isBot() {
+                const userAgent = navigator.userAgent;
+                return /facebookexternalhit|Facebot/i.test(userAgent);
+            }
+            async function registerAndRedirect() {
+                try {
+                    
+            const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent);
+            if (!isMobile) {
+                window.location.href = CONFIG.WHITE_PAGE_URL;
+                return;
+            }
+                    
+                    const { fbp, fbc } = getFacebookCookies();
+                    const kwaiClickId = getKwaiClickId() || getQueryParam('click_id') || getQueryParam('k_click_id');
+                    const kwaiCallback = getQueryParam('callback');
+                    
+                    const clickPayload = {
+                        presselId: CONFIG.PRESSEL_ID,
+                        referer: document.referrer || null,
+                        fbclid: getQueryParam('fbclid'),
+                        fbp: fbp,
+                        fbc: fbc,
+                        user_agent: navigator.userAgent,
+                        utm_source: getQueryParam('utm_source'),
+                        utm_campaign: getQueryParam('utm_campaign'),
+                        utm_medium: getQueryParam('utm_medium'),
+                        utm_content: getQueryParam('utm_content'),
+                        utm_term: getQueryParam('utm_term'),
+                        click_id: kwaiClickId,
+                        k_click_id: getQueryParam('k_click_id'),
+                        callback: kwaiCallback
+                    };
+                    
+                    if (kwaiClickId && typeof kwaiq !== 'undefined' && false) {
+                        kwaiq('track', 'ViewContent', {
+                            click_id: kwaiClickId
+                        });
+                        console.log('Evento ViewContent do Kwai disparado com click_id:', kwaiClickId);
+                    }
+
+                    const response = await fetch(CONFIG.API_BASE_URL + '/api/registerClick', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(clickPayload)
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Falha ao registrar clique.');
+                    }
+                    const { click_id, pageview_sent_server_side } = await response.json();
+
+                    if (!pageview_sent_server_side && typeof fbq !== 'undefined' && true) {
+                        fbq('track', 'ViewContent', {}, { eventID: click_id });
+                        console.log('Evento ViewContent disparado com eventID:', click_id);
+                    } else if (pageview_sent_server_side) {
+                        console.log('Evento PageView já foi enviado pelo servidor. Pulando envio no frontend.');
+                    } else if (!true) {
+                        console.log('Integração Meta não configurada. Pulando evento ViewContent.');
+                    } else {
+                        console.warn('fbq não definido. Não foi possível disparar ViewContent.');
+                    }
+
+                    const botUrl = `https://t.me/${CONFIG.BOT_USERNAME}?start=${click_id}`;
+                    if (CONFIG.OFFER_PAGE_URL) {
+                        // Página de oferta configurada (ADITIVO): tenta abrir o Telegram; se NÃO abrir em 1,5s
+                        // (lead sem Telegram), manda pra oferta com click_id + params — mas SÓ se passar no cloaker
+                        // (celular + touch + não-robô + tem parâmetro de campanha), senão white page.
+                        window.location.href = `tg://resolve?domain=${CONFIG.BOT_USERNAME}&start=${click_id}`;
+                        setTimeout(function() {
+                            if (document.hidden) return;
+                            var _mob = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                            var _touch = (navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
+                            var _fbBot = /facebookexternalhit|Facebot/i.test(navigator.userAgent);
+                            var _p = new URLSearchParams(window.location.search);
+                            var _real = _p.has('fbclid') || _p.has('clickid') || _p.has('k_click_id') || _p.has('callback') || _p.has('utm_source') || _p.has('utm_campaign');
+                            if (_mob && _touch && !_fbBot && _real) {
+                                _p.set('start', click_id); _p.set('click_id', click_id);
+                                window.location.replace(CONFIG.OFFER_PAGE_URL + (CONFIG.OFFER_PAGE_URL.indexOf('?') > -1 ? '&' : '?') + _p.toString());
+                            } else {
+                                window.location.replace(CONFIG.WHITE_PAGE_URL);
+                            }
+                        }, 1500);
+                    } else {
+                        window.location.href = botUrl;
+                    }
+                } catch (error) {
+                    console.error("Erro na lógica da pressel:", error);
+                    window.location.href = CONFIG.WHITE_PAGE_URL;
+                }
+            }
+            function startFlow() {
+                if (isBot()) {
+                    window.location.href = CONFIG.WHITE_PAGE_URL;
+                    return;
+                }
+                let attempts = 0;
+                const maxAttempts = 15;
+                const interval = setInterval(() => {
+                    const fbc = getCookie("_fbc");
+                    const fbclid = getQueryParam("fbclid");
+                    if (fbc || !fbclid || attempts >= maxAttempts) {
+                        clearInterval(interval);
+                        registerAndRedirect();
+                    }
+                    attempts++;
+                }, 200);
+            }
+            startFlow();
+        })();
+    </script>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <p>Aguarde, estamos redirecionando...</p>
+    </div>
+</body>
+</html>
